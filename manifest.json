@@ -1,10 +1,10 @@
 {
   "name": "Le Dressing de Maman",
-  "short_name": "Dressing",
-  "description": "Ta garde-robe elegante et intuitive",
+  "short_name": "Garde-Robe",
+  "description": "Toutes les tenues de maman en un clin d'œil ✨",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFF5EE",
+  "background_color": "#FFF9F0",
   "theme_color": "#FF6B9D",
   "orientation": "portrait",
   "icons": [

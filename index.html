@@ -478,6 +478,15 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
 </nav>
 
 <script>
+/* Désinstaller immédiatement tout Service Worker résiduel */
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.getRegistrations().then(function(regs){
+    regs.forEach(function(reg){reg.unregister();});
+  });
+  navigator.serviceWorker.register = function(){return Promise.resolve();};
+}
+</script>
+<script>
 window.addEventListener('DOMContentLoaded',function(){
 
 var DB='dressing-maman', TK='dressing-theme';
@@ -552,11 +561,7 @@ function upd(n){
 }
 
 /* ── EVENTS ── */
-document.getElementById('btn-exp').addEventListener('click',doExport);
-document.getElementById('btn-imp').addEventListener('click',function(){
-  document.getElementById('imp-json').value='';
-  document.getElementById('imp-json').click();
-});
+/* export/import via settings panel */
 document.getElementById('imp-json').addEventListener('change',function(){doImport(this);});
 document.getElementById('btn-add').addEventListener('click',function(){toggleForm();});
 document.getElementById('btn-sv').addEventListener('click',saveItem);
@@ -676,8 +681,14 @@ function openCtx(idx){
   var th=document.getElementById('ctx-th');
   var src=(item.photos&&item.photos[0])||'';
   th.innerHTML=src?'<img src="'+src+'" alt="">':'👗';
-  document.getElementById('ctx-edit').onclick=function(){closeCtx();setTimeout(function(){doEdit(idx);},300);};
-  document.getElementById('ctx-del').onclick=function(){closeCtx();setTimeout(function(){doDel(idx);},300);};
+  var editBtn=document.getElementById('ctx-edit');
+  var delBtn=document.getElementById('ctx-del');
+  var newEditBtn=editBtn.cloneNode(true);
+  var newDelBtn=delBtn.cloneNode(true);
+  editBtn.parentNode.replaceChild(newEditBtn,editBtn);
+  delBtn.parentNode.replaceChild(newDelBtn,delBtn);
+  newEditBtn.addEventListener('click',function(){closeCtx();setTimeout(function(){doEdit(idx);},300);});
+  newDelBtn.addEventListener('click',function(){closeCtx();setTimeout(function(){doDel(idx);},300);});
   document.getElementById('ctx-ov').classList.add('on');
   requestAnimationFrame(function(){document.getElementById('ctx-m').classList.add('on');});
 }
@@ -829,10 +840,7 @@ function scrollToAdd(){
 /* ── UTILS ── */
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-/* ── DÉSINSTALLER SW ── */
-if('serviceWorker'in navigator){
-  navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(s){s.unregister();});});
-}
+/* SW désinstallé via inline script avant DOMContentLoaded */
 
 renderItems();
 });
